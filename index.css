@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* ── Tiptap editor content area ── */
+.tiptap-edit {
+  outline: none;
+  min-height: 200px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #1c1917;
+  line-height: 1.7;
+}
+.tiptap-edit[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: #a8a29e;
+  font-style: italic;
+  pointer-events: none;
+}
+.tiptap-edit h1 { font-family: 'Playfair Display', serif; font-size: 2em; font-weight: 700; margin: 0.75em 0 0.4em; line-height: 1.2; }
+.tiptap-edit h2 { font-family: 'Playfair Display', serif; font-size: 1.5em; font-weight: 700; margin: 0.6em 0 0.3em; line-height: 1.3; }
+.tiptap-edit h3 { font-size: 1.2em; font-weight: 600; margin: 0.5em 0 0.25em; }
+.tiptap-edit p { margin: 0 0 0.75em; }
+.tiptap-edit p:last-child { margin-bottom: 0; }
+.tiptap-edit ul { list-style: disc; padding-left: 1.5em; margin: 0.5em 0 0.75em; }
+.tiptap-edit ol { list-style: decimal; padding-left: 1.5em; margin: 0.5em 0 0.75em; }
+.tiptap-edit li { margin: 0.25em 0; }
+.tiptap-edit blockquote { border-left: 3px solid #e7e5e4; padding-left: 1em; color: #78716c; font-style: italic; margin: 0.75em 0; }
+.tiptap-edit code { background: #f5f5f4; padding: 0.1em 0.35em; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.9em; }
+.tiptap-edit pre { background: #1c1917; color: #e7e5e4; padding: 1em; border-radius: 8px; overflow-x: auto; margin: 0.75em 0; }
+.tiptap-edit pre code { background: none; color: inherit; }
+.tiptap-edit a, .blog-link { color: #9f1239; text-decoration: underline; }
+.tiptap-edit img, .blog-img { max-width: 100%; border-radius: 10px; margin: 0.75em 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.tiptap-edit hr { border: none; border-top: 1px solid #e7e5e4; margin: 1.5em 0; }
+
+/* ── Blog post HTML content (rendered view) ── */
+.blog-content { line-height: 1.75; color: #292524; }
+.blog-content h1 { font-family: 'Playfair Display', serif; font-size: 2em; font-weight: 700; margin: 1em 0 0.5em; }
+.blog-content h2 { font-family: 'Playfair Display', serif; font-size: 1.5em; font-weight: 700; margin: 0.8em 0 0.4em; }
+.blog-content h3 { font-size: 1.2em; font-weight: 600; margin: 0.7em 0 0.35em; }
+.blog-content p { margin: 0 0 0.85em; }
+.blog-content ul { list-style: disc; padding-left: 1.5em; margin: 0.5em 0 0.85em; }
+.blog-content ol { list-style: decimal; padding-left: 1.5em; margin: 0.5em 0 0.85em; }
+.blog-content li { margin: 0.3em 0; }
+.blog-content blockquote { border-left: 3px solid #fecdd3; padding-left: 1em; color: #78716c; font-style: italic; margin: 0.75em 0; }
+.blog-content code { background: #f5f5f4; padding: 0.1em 0.35em; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.9em; }
+.blog-content pre { background: #1c1917; color: #e7e5e4; padding: 1em; border-radius: 8px; overflow-x: auto; margin: 0.75em 0; }
+.blog-content a { color: #9f1239; text-decoration: underline; }
+.blog-content img { max-width: 100%; border-radius: 10px; margin: 0.75em 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.blog-content strong { font-weight: 700; }
+.blog-content em { font-style: italic; }

@@ -49,10 +49,18 @@ export interface LinkedInTrend {
   hashtags: string[];
 }
 
+export interface CarouselSlide {
+  slideNumber: number;
+  type: 'HOOK' | 'CONTENT' | 'TIP' | 'CTA';
+  imagePrompt: string;
+  textOverlay: string;
+}
+
 export interface TikTokTrend {
   topic: string;
   tiktokScript: string;
   canvaPrompt: string;
+  carouselSlides: CarouselSlide[];
   hashtags: string[];
 }
 

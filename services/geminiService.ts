@@ -141,7 +141,20 @@ export const getTikTokTrends = async (): Promise<TikTokTrend[]> => {
   const ai = await getAI();
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: "Identify the top 10 trending short-form video topics currently viral in the Esthetician and Skincare community on TikTok for 2024-2025. Focus on visual transformations, 'get ready with me' (GRWM) style content, and educational hooks. For each topic, provide: 1. The topic name, 2. A short, engaging TikTok video script/hook, 3. A detailed prompt for Canva's AI video/image generation tool, and 4. A list of 5-10 trending TikTok hashtags.\n\nIMPORTANT: You must return the result EXACTLY as a JSON array of objects with the keys: 'topic', 'tiktokScript', 'canvaPrompt', 'hashtags'. Do not include any other text.",
+    contents: `Identify the top 10 trending short-form video topics currently viral in the Esthetician and Skincare community on TikTok for 2024-2025. Focus on visual transformations, 'get ready with me' (GRWM) style content, and educational hooks.
+
+For each topic provide:
+1. topic: The topic name
+2. tiktokScript: A short, engaging TikTok hook and script (2-3 sentences)
+3. canvaPrompt: A single overall Canva AI image prompt for the thumbnail cover
+4. carouselSlides: An array of 5 to 7 TikTok CAROUSEL slides. TikTok carousels are photo slideshows (1080x1920px portrait, 9:16 ratio). Each slide must have:
+   - slideNumber (1-based integer)
+   - type: one of HOOK (slide 1 - bold eye-catching opener), CONTENT (middle educational/tips slides), TIP (quick actionable tip), or CTA (final slide - save/follow call to action)
+   - imagePrompt: A detailed Canva AI image generation prompt specific to that single slide. Include: background scene/visual, color palette (use TikTok-native aesthetics: clean whites, pinks, teals, or bold contrast), layout style, and any props or skincare products relevant to the topic. Optimized for 1080x1920px portrait carousel format.
+   - textOverlay: The exact bold text to display on that slide (short, punchy, TikTok style)
+5. hashtags: A list of 5-10 trending TikTok hashtags
+
+IMPORTANT: Return EXACTLY as a JSON array. No other text.`,
     config: {
       tools: [{ googleSearch: {} }]
     }

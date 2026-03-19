@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTikTokTrends } from '../services/geminiService';
 import { useAutoRefresh } from '../hooks/useAutoRefresh';
+import { CarouselSlide } from '../types';
 
 interface TikTokSentimentAnalyzerProps {
   meghanMode?: boolean;
@@ -163,22 +164,93 @@ const TikTokSentimentAnalyzer: React.FC<TikTokSentimentAnalyzerProps> = ({ megha
                 </div>
               </div>
 
-              <div className="p-8 lg:w-1/2 bg-stone-950 flex flex-col">
-                <div className="mb-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">Canva AI Video Prompt</p>
-                  <div className="p-5 bg-stone-900 rounded-2xl text-stone-300 text-sm leading-relaxed border border-stone-800 shadow-inner group-hover:border-stone-700 transition-colors">
-                    <p className="font-medium mb-2 text-white">Prompt:</p>
-                    <p className="text-stone-400 italic">"{trend.canvaPrompt}"</p>
-                    <button 
-                      onClick={() => navigator.clipboard.writeText(trend.canvaPrompt)}
-                      className="mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#00f2ea] hover:text-white transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                      Copy Prompt
-                    </button>
-                  </div>
+              <div className="p-8 lg:w-1/2 bg-stone-950 flex flex-col gap-6">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-3">
+                    TikTok Carousel — {trend.carouselSlides?.length ?? 0} Slides
+                  </p>
+
+                  {/* Slide cards */}
+                  {trend.carouselSlides?.length > 0 ? (
+                    <div className="space-y-3">
+                      {trend.carouselSlides.map((slide: CarouselSlide) => {
+                        const typeMeta: Record<string, { label: string; color: string; bg: string }> = {
+                          HOOK:    { label: 'Hook',    color: '#ff0050', bg: 'rgba(255,0,80,0.12)' },
+                          CONTENT: { label: 'Content', color: '#00f2ea', bg: 'rgba(0,242,234,0.10)' },
+                          TIP:     { label: 'Tip',     color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
+                          CTA:     { label: 'CTA',     color: '#fbbf24', bg: 'rgba(251,191,36,0.12)' },
+                        };
+                        const meta = typeMeta[slide.type] ?? typeMeta.CONTENT;
+
+                        return (
+                          <div key={slide.slideNumber} className="rounded-2xl border border-stone-800 overflow-hidden">
+                            {/* Slide header */}
+                            <div className="flex items-center justify-between px-4 py-2 bg-stone-900 border-b border-stone-800">
+                              <div className="flex items-center gap-2">
+                                <span className="w-5 h-5 rounded-full bg-stone-800 text-stone-400 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                                  {slide.slideNumber}
+                                </span>
+                                <span
+                                  className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
+                                  style={{ color: meta.color, backgroundColor: meta.bg }}
+                                >
+                                  {meta.label}
+                                </span>
+                              </div>
+                              <span className="text-[9px] text-stone-600 font-medium">1080 × 1920px</span>
+                            </div>
+
+                            {/* Text overlay */}
+                            <div className="px-4 pt-3 pb-2">
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-stone-600 mb-1">Text Overlay</p>
+                              <p className="text-white font-bold text-sm leading-snug">"{slide.textOverlay}"</p>
+                            </div>
+
+                            {/* Image prompt */}
+                            <div className="px-4 pb-3">
+                              <p className="text-[9px] font-bold uppercase tracking-widest text-stone-600 mb-1">Canva Image Prompt</p>
+                              <p className="text-stone-400 text-xs leading-relaxed italic">{slide.imagePrompt}</p>
+                              <button
+                                onClick={() => navigator.clipboard.writeText(slide.imagePrompt)}
+                                className="mt-2 flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider transition-colors"
+                                style={{ color: meta.color }}
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                Copy Prompt
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Copy all prompts */}
+                      <button
+                        onClick={() => {
+                          const all = trend.carouselSlides.map((s: CarouselSlide) =>
+                            `SLIDE ${s.slideNumber} [${s.type}]\nText: "${s.textOverlay}"\nImage Prompt: ${s.imagePrompt}`
+                          ).join('\n\n---\n\n');
+                          navigator.clipboard.writeText(all);
+                        }}
+                        className="w-full mt-1 py-2 rounded-xl border border-stone-700 text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:border-[#00f2ea] hover:text-[#00f2ea] transition-colors"
+                      >
+                        Copy All Slide Prompts
+                      </button>
+                    </div>
+                  ) : (
+                    /* Fallback: show legacy canvaPrompt if no carousel slides */
+                    <div className="p-5 bg-stone-900 rounded-2xl border border-stone-800">
+                      <p className="text-stone-400 italic text-sm">"{trend.canvaPrompt}"</p>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(trend.canvaPrompt)}
+                        className="mt-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#00f2ea] hover:text-white transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        Copy Prompt
+                      </button>
+                    </div>
+                  )}
                 </div>
-                
+
                 <div className="mt-auto pt-4 border-t border-stone-800 flex items-center justify-between text-[10px] text-stone-500 font-medium tracking-widest uppercase">
                   <span>Viral Potential: Extreme</span>
                   <span>Algorithm Fit: Optimized</span>
