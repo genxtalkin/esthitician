@@ -6,27 +6,38 @@ export const useAutoRefresh = (storageKey: string, fetchFn: () => Promise<any>) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getRecentCheckpoint = () => {
+  const getRecentCheckpoint = (): number => {
     const now = new Date();
-    const day = now.getDay(); // 0 (Sun) to 6 (Sat)
-    
-    // Checkpoints are Monday (1) and Thursday (4)
-    const checkpoints = [1, 4];
-    
-    let lastCheckpoint = new Date(now);
-    lastCheckpoint.setHours(0, 0, 0, 0);
-    
-    // Find the most recent checkpoint day that is <= today
-    const pastCheckpoints = checkpoints.filter(d => d <= day).sort((a, b) => b - a);
-    
-    if (pastCheckpoints.length > 0) {
-      lastCheckpoint.setDate(now.getDate() - (day - pastCheckpoints[0]));
-    } else {
-      // If no checkpoint earlier this week, go to Thursday of last week
-      lastCheckpoint.setDate(now.getDate() - (day + 3)); // day + (7 - 4)
+
+    // Parse current time in Eastern timezone using the locale trick.
+    // etNow has the correct ET hour/day but its internal UTC value is wrong
+    // (it treats the ET string as local time). The offset corrects for this.
+    const etNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const etOffset = now.getTime() - etNow.getTime(); // ms to add to etNow to get real UTC
+
+    const day = etNow.getDay();   // 0 = Sun … 6 = Sat, in ET
+    const hour = etNow.getHours(); // current hour in ET
+
+    const checkpointDays = [1, 4]; // Monday, Thursday
+
+    // Walk back up to 7 days to find the most recent checkpoint that has passed
+    for (let i = 0; i <= 7; i++) {
+      const candidateDay = ((day - i) % 7 + 7) % 7;
+      if (!checkpointDays.includes(candidateDay)) continue;
+      // If the checkpoint is today but it's before 4am ET, keep looking
+      if (i === 0 && hour < 4) continue;
+
+      // Build the checkpoint moment: i days ago at 04:00:00 ET
+      const cp = new Date(etNow);
+      cp.setDate(cp.getDate() - i);
+      cp.setHours(4, 0, 0, 0);
+
+      // Return as real UTC ms
+      return cp.getTime() + etOffset;
     }
-    
-    return lastCheckpoint.getTime();
+
+    // Fallback (should never be reached): 7 days ago
+    return now.getTime() - 7 * 24 * 60 * 60 * 1000;
   };
 
   const loadData = useCallback(async (force = false) => {
